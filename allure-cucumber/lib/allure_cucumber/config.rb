@@ -10,8 +10,10 @@ module AllureCucumber
       DEFAULT_ISSUE_PREFIX = "ISSUE:"
       # @return [String] default severity tag prefix
       DEFAULT_SEVERITY_PREFIX = "SEVERITY:"
+      # @return [String] default severity tag prefix
+      DEFAULT_TEST_TYPE_PREFIX = "testType:"
 
-      attr_writer :tms_prefix, :issue_prefix, :severity_prefix
+      attr_writer :tms_prefix, :issue_prefix, :severity_prefix, :test_type_prefix
 
       # @return [String]
       def tms_prefix
@@ -26,6 +28,11 @@ module AllureCucumber
       # @return [String]
       def severity_prefix
         @severity_prefix || DEFAULT_SEVERITY_PREFIX
+      end
+
+      # @return [String]
+      def test_type_prefix
+        @test_type_prefix || DEFAULT_TEST_TYPE_PREFIX
       end
     end
   end

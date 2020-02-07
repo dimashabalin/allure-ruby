@@ -47,6 +47,17 @@ module AllureCucumber
     end
 
     # @param [Cucumber::Core::Ast::Tag] tags
+    # @return [Allure::Label]
+    def test_type(tags)
+      test_type_pattern = reserved_patterns[:test_type]
+      test_type = tags
+        .detect { |tag| tag.name.match?(test_type_pattern) }&.name
+        &.match(test_type_pattern)&.[](:testType) || "functional"
+
+      Allure::ResultUtils.test_type_label(test_type)
+    end
+
+    # @param [Cucumber::Core::Ast::Tag] tags
     # @return [Hash<Symbol, Boolean>]
     def status_detail_tags(tags)
       {
@@ -64,6 +75,7 @@ module AllureCucumber
         tms: /@#{CucumberConfig.tms_prefix}(?<tms>\S+)/,
         issue: /@#{CucumberConfig.issue_prefix}(?<issue>\S+)/,
         severity: /@#{CucumberConfig.severity_prefix}(?<severity>\S+)/,
+        test_type: /@#{CucumberConfig.test_type_prefix}(?<testType>\S+)/,
         flaky: /@flaky/,
         muted: /@muted/,
         known: /@known/,

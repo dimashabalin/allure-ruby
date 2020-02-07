@@ -75,12 +75,16 @@ module AllureCucumber
     # @return [void]
     def on_test_case_finished(event)
       failure_details = failure_details(event.result)
-      status = ALLURE_STATUS.fetch(event.result.to_sym, Allure::Status::BROKEN)
+      run_status = ALLURE_STATUS.fetch(event.result.to_sym, Allure::Status::BROKEN)
       lifecycle.update_test_case do |test_case|
         test_case.stage = Allure::Stage::FINISHED
-        test_case.status = event.result.failed? ? Allure::ResultUtils.status(event.result&.exception) : status
+        # Sets test broken status for all failures except rspec expectations. Useful yet not for us =)
+        # test_case.status = event.result.failed? ? Allure::ResultUtils.status(event.result&.exception) : run_status
+
+        status, message = Allure::ResultUtils.result_after_jira_check(test_case, run_status)
+        test_case.status = status
         test_case.status_details.flaky = event.result.flaky?
-        test_case.status_details.message = failure_details[:message]
+        test_case.status_details.message = message + failure_details[:message].to_s
         test_case.status_details.trace = failure_details[:trace]
       end
       lifecycle.stop_test_case

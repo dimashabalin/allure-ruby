@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-
+require_relative 'jira_helper'
 require "socket"
 
 module Allure
@@ -17,6 +17,7 @@ module Allure
     STORY_LABEL_NAME = "story"
     SEVERITY_LABEL_NAME = "severity"
     TAG_LABEL_NAME = "tag"
+    TEST_TYPE_NAME = "testType"
     OWNER_LABEL_NAME = "owner"
     LEAD_LABEL_NAME = "lead"
     HOST_LABEL_NAME = "host"
@@ -28,6 +29,7 @@ module Allure
     LANGUAGE_LABEL_NAME = "language"
 
     class << self
+      include JIRAHelper
       # @param [Time] time
       # @return [Number]
       def timestamp(time = nil)
@@ -117,6 +119,13 @@ module Allure
         Label.new(SEVERITY_LABEL_NAME, value)
       end
 
+      # Test Type label
+      # @param [String] value
+      # @return [Allure::Label]
+      def test_type_label(value)
+        Label.new(TEST_TYPE_NAME, value)
+      end
+
       # TMS link
       # @param [String] value
       # @return [Allure::Link]
@@ -136,6 +145,47 @@ module Allure
       # @return [Symbol]
       def status(exception)
         exception.is_a?(RSpec::Expectations::ExpectationNotMetError) ? Status::FAILED : Status::BROKEN
+      end
+
+      def result_after_jira_check(test_case, run_status)
+        issue_id = test_case.links.find { |link| link.type == 'issue' }&.name
+        test_id = test_case.links.find { |link| link.type == 'tms' }&.name
+
+        # compare run status with JIRA bug status to skip known or untag fixed
+        if issue_id
+          jira_status = issue(issue_id).to_s
+          if jira_status == '' && run_status != Status::PASSED
+            return Status::SKIPPED, "cannot get #{issue_id} status" + "\n"
+          end
+          if jira_status != 'Closed' && run_status == Status::FAILED
+            return Status::SKIPPED, pending_msg(issue_id, jira_status) + "\n"
+          end
+          if jira_status == 'Closed' && run_status == Status::PASSED
+            return Status::BROKEN, delete_bug_msg(issue_id, jira_status) + "\n"
+          end
+          if jira_status == 'Closed' && run_status != Status::PASSED
+            return Status::FAILED, strange_behavior_msg(issue_id, jira_status, run_status) + "\n"
+          end
+          if jira_status != 'Closed' && run_status == Status::PASSED
+            return Status::BROKEN, strange_behavior_msg(issue_id, jira_status, run_status) + "\n"
+          end
+        end
+
+        # turned off due to one Jira issue might include TCs with different priorities
+        # compare Jira status for specified TEST to find out if priority mismatch or
+        # Automated status needs to update
+        # if test_id
+        #    jira_priority = issue(test_id, JIRA_ISSUE_FIELDS[:priority]).to_s.downcase
+        #    priority = test_case.labels.severity.to_s.downcase == '' ? 'normal' : test_case.labels.severity.to_s.downcase == ''
+        #    unless priority == jira_priority
+        #      return Status::BROKEN, priority_msg(test_id, jira_priority, priority)
+        #    end
+        #   jira_automated_status = issue(test_id, JIRA_ISSUE_FIELDS[:automated]).to_s.downcase
+        #   if jira_automated_status == JIRA_ISSUE_TO_UPDATE
+        #     return Status::BROKEN, to_update_mgs(test_id)
+        #   end
+        # end
+        [run_status, '']
       end
 
       # Get exception status detail

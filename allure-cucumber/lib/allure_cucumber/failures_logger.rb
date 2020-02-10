@@ -7,6 +7,7 @@ module AllureCucumber
     include AllureCucumberModel
 
     def initialize(config)
+      @out_file = config.out_stream.is_a?(String) ? config.out_stream : 'cucumber_failures.log'
       config.on_event(:test_case_finished, &method(:on_test_case_finished))
       config.on_event(:test_run_finished, &method(:on_test_run_finished))
     end
@@ -42,7 +43,7 @@ module AllureCucumber
     end
 
     def print_cucumber_failures
-      File.open('cucumber_failures.log', 'a') { |f| f.write(file_failures.join("\n") + "\n") }
+      File.open(@out_file, 'a') { |f| f.write(file_failures.join("\n") + "\n") }
     end
 
     def file_failures

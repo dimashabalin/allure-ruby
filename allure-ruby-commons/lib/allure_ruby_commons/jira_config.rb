@@ -1,6 +1,8 @@
 require 'yaml'
 
-jira_config = YAML.load_file('jira_config.yml')
+USE_JIRA_ISSUE_STATUS = File.exist?('jira_config.yml')
+
+jira_config = USE_JIRA_ISSUE_STATUS ? YAML.load_file('jira_config.yml') : {}
 # jira_config.yml file should has following format
 # ---
 # JIRA_ISSUE_URL: https://<jira_url>/rest/api/latest/issue/

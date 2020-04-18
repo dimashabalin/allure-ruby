@@ -81,10 +81,15 @@ module AllureCucumber
         # Sets test broken status for all failures except rspec expectations. Useful yet not for us =)
         # test_case.status = event.result.failed? ? Allure::ResultUtils.status(event.result&.exception) : run_status
 
-        status, message = Allure::ResultUtils.result_after_jira_check(test_case, run_status)
+        status, jira_message = 
+          if USE_JIRA_ISSUE_STATUS
+            Allure::ResultUtils.result_after_jira_check(test_case, run_status)
+          else
+            [run_status, '']
+          end
         test_case.status = status
         test_case.status_details.flaky = event.result.flaky?
-        test_case.status_details.message = message + failure_details[:message].to_s
+        test_case.status_details.message = jira_message + failure_details[:message].to_s
         test_case.status_details.trace = failure_details[:trace]
       end
       lifecycle.stop_test_case

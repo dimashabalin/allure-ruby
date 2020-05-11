@@ -60,6 +60,7 @@ module AllureRspec
         labels << severity(example.metadata)
         labels.push(*suite_labels(example.example_group))
         labels.push(*tag_labels(example.metadata))
+        labels.push(*test_type_labels(example.metadata))
       end
     end
 

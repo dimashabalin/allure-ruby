@@ -37,6 +37,15 @@ module AllureRspec
       Allure::ResultUtils.severity_label(metadata[:severity] || "normal")
     end
 
+    # Get test_type
+    # @param [Hash] metadata
+    # @return [String]
+    def test_type_labels(metadata)
+      return [] unless metadata.keys.any? { |k| test_type?(k) }
+
+      metadata.select { |k, _v| test_type?(k) }.values.map { |v| Allure::ResultUtils.test_type_label(v) }
+    end
+    
     # Get status details
     # @param [Hash] metadata
     # @return [Hash<Symbol, Boolean>]
@@ -69,6 +78,13 @@ module AllureRspec
     # @return [boolean]
     def issue?(key)
       key.to_s.match?(/issue(_\d+)?/i)
+    end
+    
+    # Does key match test type pattern
+    # @param [Symbol] key
+    # @return [boolean]
+    def test_type?(key)
+      key.to_s.match?(/test_type/i)
     end
   end
 end

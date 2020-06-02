@@ -11,6 +11,28 @@ module AllureRspec
 
       metadata.select { |k, _v| allure?(k) }.values.map { |v| Allure::ResultUtils.tag_label(v) }
     end
+    
+    # Set package from from filename, original from folder
+    # @param [Hash] metadata
+    # @return [String]
+    def set_package(example)
+      Allure::ResultUtils.package_label(File.basename(example.file_path, ".rb"))
+      # Allure::ResultUtils.package_label(Pathname.new(strip_relative(example.file_path)).parent.to_s)
+    end
+
+    # Set feature from tag or use example description
+    # @param [Hash] metadata
+    # @return [String]
+    def set_feature(example)
+      Allure::ResultUtils.feature_label(example.metadata[:feature] || example.example_group.description)
+    end
+
+    # Set story from tag or use example description
+    # @param [Hash] metadata
+    # @return [String]
+    def set_story(example)
+      Allure::ResultUtils.story_label(example.metadata[:story] || example.description)
+    end
 
     # Get tms links
     # @param [Hash] metadata

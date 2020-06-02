@@ -53,9 +53,9 @@ module AllureRspec
     def labels(example)
       [].tap do |labels|
         labels << Allure::ResultUtils.framework_label("rspec")
-        labels << Allure::ResultUtils.feature_label(example.example_group.description)
-        labels << Allure::ResultUtils.package_label(Pathname.new(strip_relative(example.file_path)).parent.to_s)
-        labels << Allure::ResultUtils.story_label(example.description)
+        labels << set_feature(example)
+        labels << set_package(example)
+        labels << set_story(example)
         labels << Allure::ResultUtils.test_class_label(File.basename(example.file_path, ".rb"))
         labels << severity(example.metadata)
         labels.push(*suite_labels(example.example_group))

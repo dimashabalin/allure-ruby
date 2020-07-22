@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 require "colorize"
-require "rake"
-require "semantic"
 
 module TaskUtil
   def root
-    @root ||= File.expand_path("..", __dir__)
+    @root ||= File.expand_path("../..", __dir__)
   end
 
   def adaptors
@@ -14,6 +12,6 @@ module TaskUtil
   end
 
   def version
-    Semantic::Version.new(File.read("#{root}/ALLURE_VERSION").strip)
+    @version ||= File.read("#{root}/ALLURE_VERSION").strip
   end
 end

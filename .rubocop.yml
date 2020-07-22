@@ -221,11 +221,13 @@ Layout/FirstHashElementIndentation:
 
 Layout/HeredocIndentation:
   Enabled: true
-  EnforcedStyle: squiggly
 
 Layout/IndentationConsistency:
   Enabled: true
   EnforcedStyle: normal
+
+Layout/IndentationStyle:
+  Enabled: true
 
 Layout/IndentationWidth:
   Enabled: true
@@ -257,7 +259,7 @@ Layout/MultilineHashBraceLayout:
 
 Layout/MultilineMethodCallBraceLayout:
   Enabled: true
-  EnforcedStyle: new_line
+  EnforcedStyle: symmetrical
 
 Layout/MultilineMethodCallIndentation:
   Enabled: true
@@ -360,9 +362,6 @@ Layout/SpaceInsideStringInterpolation:
   Enabled: true
   EnforcedStyle: no_space
 
-Layout/Tab:
-  Enabled: true
-
 Layout/TrailingEmptyLines:
   Enabled: true
   EnforcedStyle: final_newline
@@ -428,9 +427,6 @@ Lint/EmptyInterpolation:
   Enabled: true
 
 Lint/EmptyWhen:
-  Enabled: true
-
-Lint/EndInMethod:
   Enabled: true
 
 Lint/EnsureReturn:
@@ -888,10 +884,6 @@ Style/BlockComments:
 Style/BlockDelimiters:
   Enabled: true
   EnforcedStyle: line_count_based
-
-Style/BracesAroundHashParameters:
-  Enabled: true
-  EnforcedStyle: no_braces
 
 Style/CaseEquality:
   Enabled: true

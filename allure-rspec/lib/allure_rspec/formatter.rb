@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require "ruby2_keywords"
 require "rspec/core"
 require "rspec/core/formatters/base_formatter"
 
 require_relative "rspec_model"
 
+# Main allure-rspec module
 module AllureRspec
+  # Main rspec formatter class translating rspec events to allure lifecycle
   class RSpecFormatter < RSpec::Core::Formatters::BaseFormatter
     include AllureRspecModel
 
@@ -20,7 +23,7 @@ module AllureRspec
 
     RSpec::Core::Example.class_eval do
       Allure.singleton_methods.each do |method|
-        define_method(method) { |*args, &block| Allure.__send__(method, *args, &block) }
+        ruby2_keywords define_method(method) { |*args, &block| Allure.__send__(method, *args, &block) }
       end
     end
 
@@ -35,9 +38,10 @@ module AllureRspec
     # @param [RSpec::Core::Notifications::GroupNotification] example_group_notification
     # @return [void]
     def example_group_started(example_group_notification)
-      lifecycle.start_test_container(
-        Allure::TestResultContainer.new(name: example_group_notification.group.description),
-      )
+      description = example_group_notification.group.description.yield_self do |desc|
+        desc.empty? ? "Anonymous" : desc
+      end
+      lifecycle.start_test_container(Allure::TestResultContainer.new(name: description))
     end
 
     # Starts example
@@ -56,7 +60,7 @@ module AllureRspec
     end
 
     # Starts example group
-    # @param [RSpec::Core::Notifications::GroupNotification] example_group_notification
+    # @param [RSpec::Core::Notifications::GroupNotification] _example_group_notification
     # @return [void]
     def example_group_finished(_example_group_notification)
       lifecycle.stop_test_container

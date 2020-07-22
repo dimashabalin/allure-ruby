@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "rspec"
 require "simplecov"
+require "rspec"
 require "allure-ruby-commons"
 
 SimpleCov.command_name("allure-ruby-commons")
@@ -50,5 +50,5 @@ RSpec.shared_context("lifecycle mocks") do
 end
 
 def clean_results_dir
-  FileUtils.remove_dir(Allure::Config.results_directory) if File.exist?(Allure::Config.results_directory)
+  FileUtils.remove_dir(Allure.configuration.results_directory) if File.exist?(Allure.configuration.results_directory)
 end

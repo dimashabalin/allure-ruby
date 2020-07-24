@@ -1,10 +1,12 @@
-# frozen_string_literal: true
-require_relative "cucumber_model"
+require "cucumber/core"
+
+require_relative "models/cucumber_model"
+require_relative "models/tag_parser"
 
 module AllureCucumber
   # Failure logger formatter class. Logging of all the failures avoing known issues to optimize rerun
   class FailuresLogger
-    include AllureCucumberModel
+    include TagParser
 
     def initialize(config)
       @out_file = config.out_stream.is_a?(String) ? config.out_stream : 'cucumber_failures.log'

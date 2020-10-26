@@ -8,7 +8,7 @@ describe "Lifecycle:Attachments" do
     {
       name: "Test Attachment",
       source: "string attachment",
-      type: Allure::ContentType::TXT,
+      type: Allure::ContentType::TXT
     }
   end
 
@@ -61,7 +61,7 @@ describe "Lifecycle:Attachments" do
     lifecycle.add_attachment(
       name: "Test xlsx attachment",
       source: File.new(File.join(Dir.pwd, "spec", "fixtures", "blank.xlsx")),
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     attachment = @test_case.attachments.last
 
@@ -89,19 +89,19 @@ describe "Lifecycle:Attachments" do
   it "logs no running test case error" do
     allow(file_writer).to receive(:write_test_result)
 
-    expect(logger).to receive(:error).with(/no test, step or fixture is running/)
+    expect_any_instance_of(Logger).to receive(:error)
 
     lifecycle.stop_test_case
     lifecycle.add_attachment(**attach_opts)
   end
 
   it "logs incorrect mime type error" do
-    expect(logger).to receive(:error).with(/unrecognized mime type: nonsence/)
+    expect_any_instance_of(Logger).to receive(:error)
 
     lifecycle.add_attachment(
       name: "Test Attachment",
       source: "string attachment",
-      type: "nonsence",
+      type: "nonsence"
     )
   end
 end

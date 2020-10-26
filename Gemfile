@@ -13,13 +13,13 @@ group :development do
   gem "lefthook", "~> 0.7.2"
   gem "pry", "~> 0.13.1"
   gem "rake", "~> 13.0.1"
-  gem "solargraph", "~> 0.39.12"
+  gem "solargraph", "~> 0.39.17"
 end
 
 group :test do
   gem "rspec", "~> 3.9.0"
-  gem "rubocop", "~> 0.88.0"
-  gem "rubocop-performance", "~> 1.7.1"
-  gem "simplecov", "~> 0.18.5"
+  gem "rubocop", "~> 0.93.1"
+  gem "rubocop-performance", "~> 1.8.1"
+  gem "simplecov", "~> 0.19.0"
   gem "simplecov-console", "~> 0.7.2"
 end

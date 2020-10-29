@@ -43,7 +43,7 @@ module AllureCucumber
     def test_type(tags)
       test_type_pattern = reserved_patterns[:test_type]
       test_type = tags
-        .detect { |tag| tag.match?(test_type_pattern) }&.name
+        .detect { |tag| tag.match?(test_type_pattern) }
         &.match(test_type_pattern)&.[](:testType) || "functional"
 
       Allure::ResultUtils.test_type_label(test_type)

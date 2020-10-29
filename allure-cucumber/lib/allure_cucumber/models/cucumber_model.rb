@@ -85,6 +85,7 @@ module AllureCucumber
       unless scenario.tags.empty?
         labels.push(*tag_labels(scenario.tags))
         labels << severity(scenario.tags)
+        labels << test_type(scenario.tags)
       end
 
       labels

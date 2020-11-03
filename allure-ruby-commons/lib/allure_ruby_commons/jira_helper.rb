@@ -3,35 +3,15 @@ require 'json'
 require_relative 'jira_config'
 
 module JIRAHelper
-  def issue(issue, field = JIRA_ISSUE_FIELDS['status'])
-    uri = URI(JIRA_ISSUE_URL + issue.to_s)
-    issue_status = ''
-    jira_response = nil
-    begin
-      Net::HTTP.start(
-        uri.host, uri.port,
-        use_ssl: uri.scheme == 'https',
-        verify_mode: OpenSSL::SSL::VERIFY_NONE,
-        open_timeout: 15,
-        read_timeout: 30
-      ) do |http|
-        request = Net::HTTP::Get.new uri.request_uri
-        request.basic_auth JIRA_ACCOUNT_NAME, JIRA_ACCOUNT_PASSWORD
+  def jira_issue_fields(issue, *fields)
+    json_response = parse_response jira_issue_request(issue)
 
-        jira_response = http.request request
+    issue_fields = {}
 
-        json_resp = JSON.parse(jira_response.body)
-        issue_status = json_resp['fields'][field]['name']
-      end
-    rescue
-      case jira_response
-      when Net::HTTPSuccess
-        puts "jira response body was changed: #{jira_response.body}"
-      else
-        puts 'smth wrong with connection to jira'
-      end
+    fields.each do |field|
+      issue_fields[field] = json_response.dig('fields', field, 'name')
     end
-    issue_status
+    issue_fields
   end
 
   def pending_msg(issue_id, issue_status)
@@ -52,5 +32,34 @@ module JIRAHelper
 
   def to_update_mgs(test_id)
     "Test '#{test_id}' is in '#{JIRA_ISSUE_TO_UPDATE}' automated status. Need to check and change status."
+  end
+
+  private
+
+  def jira_issue_request(issue)
+    uri = URI(JIRA_ISSUE_URL + issue.to_s)
+    begin
+      Net::HTTP.start(
+        uri.host, uri.port,
+        use_ssl: uri.scheme == 'https',
+        verify_mode: OpenSSL::SSL::VERIFY_NONE,
+        open_timeout: 15,
+        read_timeout: 30
+      ) do |http|
+        request = Net::HTTP::Get.new uri.request_uri
+        request.basic_auth JIRA_ACCOUNT_NAME, JIRA_ACCOUNT_PASSWORD
+
+        http.request request
+      end
+    rescue => e
+      puts "smth wrong with connection to jira:\n#{e}\n#{e.backtrace.join("\n")}"
+    end
+  end
+
+  def parse_response(response)
+    JSON.parse(response.body)
+  rescue => e
+    puts "non-json body in jira response. code: #{response.code}"
+    {}
   end
 end

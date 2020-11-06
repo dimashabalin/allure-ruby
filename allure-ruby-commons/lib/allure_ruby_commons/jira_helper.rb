@@ -5,11 +5,11 @@ require_relative 'jira_config'
 module JIRAHelper
   def jira_issue_fields(issue, *fields)
     json_response = parse_response jira_issue_request(issue)
-
     issue_fields = {}
 
     fields.each do |field|
-      issue_fields[field] = json_response.dig('fields', field, 'name')
+      issue_fields[field] = json_response.dig('fields', JIRA_ISSUE_FIELDS[field], 'name') ||
+        json_response.dig('fields', JIRA_ISSUE_FIELDS[field], 'value')
     end
     issue_fields
   end
@@ -48,7 +48,6 @@ module JIRAHelper
       ) do |http|
         request = Net::HTTP::Get.new uri.request_uri
         request.basic_auth JIRA_ACCOUNT_NAME, JIRA_ACCOUNT_PASSWORD
-
         http.request request
       end
     rescue => e

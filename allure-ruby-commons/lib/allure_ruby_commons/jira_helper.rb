@@ -87,7 +87,7 @@ module JIRAHelper
 
   def dig_issue_field(issue_object, field)
     issue_object.dig('fields', JIRA_ISSUE_FIELDS[field], 'name') ||
-        issue_object.dig('fields', JIRA_ISSUE_FIELDS[field], 'value')
+      issue_object.dig('fields', JIRA_ISSUE_FIELDS[field], 'value')
   end
 
   def parse_response(response)

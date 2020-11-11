@@ -175,21 +175,6 @@ module Allure
             return Status::BROKEN, strange_behavior_msg(issue_id, jira_status, run_status) + "\n"
           end
         end
-
-        # turned off due to one Jira issue might include TCs with different priorities
-        # compare Jira status for specified TEST to find out if priority mismatch or
-        # Automated status needs to update
-        # if test_id
-        #    jira_priority = jira_issue_fields(test_id, JIRA_ISSUE_FIELDS[:priority]).to_s.downcase
-        #    priority = test_case.labels.severity.to_s.downcase == '' ? 'normal' : test_case.labels.severity.to_s.downcase == ''
-        #    unless priority == jira_priority
-        #      return Status::BROKEN, priority_msg(test_id, jira_priority, priority)
-        #    end
-        #   jira_automated_status = jira_issue_fields(test_id, JIRA_ISSUE_FIELDS[:automated]).to_s.downcase
-        #   if jira_automated_status == JIRA_ISSUE_TO_UPDATE
-        #     return Status::BROKEN, to_update_mgs(test_id)
-        #   end
-        # end
         [run_status, '']
       end
 

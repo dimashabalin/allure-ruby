@@ -29,7 +29,10 @@ module AllureCucumber
       test_ids.each do |test_id|
         unless tests_status[test_id]
           jira_fields = Allure::ResultUtils.jira_issue_fields(test_id, 'status', 'automated', 'priority')
-          tests_status[test_id] = { automation_priority: priority, bugs: bugs }.merge(jira_fields)
+          tests_status[test_id] = {
+            automation_priority: priority,
+            automation_status: bugs.empty? ? 'Running' : bugs
+          }.merge(jira_fields)
         end
       end
     end
